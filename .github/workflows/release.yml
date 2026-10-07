@@ -17,6 +17,20 @@ jobs:
     permissions:
       contents: write
     steps:
+      - uses: actions/setup-go@v6
+        with:
+          go-version: stable
+          cache: false
+      # A Go module is published by its tag. Fetching it through the public proxy
+      # records it there and in the checksum database, so `go get` works at once.
+      - name: Publish the module to the Go proxy
+        env:
+          GOPROXY: https://proxy.golang.org
+          GOFLAGS: -mod=mod
+        run: |
+          cd "$(mktemp -d)"
+          go mod init release-check
+          go get "github.com/statespace-tech/go-sdk@${GITHUB_REF_NAME}"
       - name: Create the GitHub release from the tag
         env:
           GH_TOKEN: ${{ github.token }}

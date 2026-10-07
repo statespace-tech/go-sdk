@@ -13,7 +13,7 @@ everywhere else.
 Add the module to your service.
 
 ```shell
-go get github.com/statespace-tech/go-sdk@v0.1.1
+go get github.com/statespace-tech/go-sdk
 ```
 
 Set an API key from `ssp key create --preset runtime`. Locally, the SDK uses your `ssp login` session.
