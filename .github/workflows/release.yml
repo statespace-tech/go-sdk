@@ -14,6 +14,7 @@ jobs:
   release:
     needs: check
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     permissions:
       contents: write
     steps:
@@ -30,7 +31,12 @@ jobs:
         run: |
           cd "$(mktemp -d)"
           go mod init release-check
-          go get "github.com/statespace-tech/go-sdk@${GITHUB_REF_NAME}"
+          # The proxy caches a missing version for up to 30 minutes.
+          for attempt in $(seq 1 40); do
+            go get "github.com/statespace-tech/go-sdk@${GITHUB_REF_NAME}" && exit 0
+            sleep 60
+          done
+          exit 1
       - name: Create the GitHub release from the tag
         env:
           GH_TOKEN: ${{ github.token }}
